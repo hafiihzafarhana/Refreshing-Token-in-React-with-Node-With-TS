@@ -6,7 +6,7 @@ import AuthService from "@services/auth.service";
 import { UserRoleInterface } from "@/interfaces/role.interface";
 import { getUserAgent } from "@/utils/userAgent.util";
 import { RegisterUserDto, LoginUserDto, TokenRefresherDto } from "@dtos/auth.dto";
-import { HttpExceptionUnauthorize } from "@/exceptions/HttpException";
+// import { HttpExceptionUnauthorize } from "@/exceptions/HttpException";
 
 interface AuthenticateRequest extends Request {
   user?: UserRoleInterface;
@@ -30,15 +30,11 @@ class AuthController {
 
   public tokenRefresh = expressAsyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { refresh_token }: TokenRefresherDto = req.body;
-    const access_token = req.headers.authorization?.split(" ")[1];
-    if (!access_token) {
-      throw new HttpExceptionUnauthorize("Unauthorized. Please login to continue.");
-    }
-    const userServiceResponse = await this.authService.tokenRefresh(
-      access_token,
-      refresh_token,
-      res,
-    );
+    // const access_token = req.headers.authorization?.split(" ")[1];
+    // if (!access_token) {
+    //   throw new HttpExceptionUnauthorize("Unauthorized. Please login to continue.");
+    // }
+    const userServiceResponse = await this.authService.tokenRefresh(refresh_token, res);
     res.status(200).json(userServiceResponse);
   });
 

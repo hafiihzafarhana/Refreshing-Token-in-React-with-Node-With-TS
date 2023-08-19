@@ -15,11 +15,11 @@ class UserSessionRepository {
   };
 
   public findSessionByAccTokenRefreshToken = async (
-    accessToken: string,
+    // accessToken: string,
     refreshToken: string,
   ): Promise<UserSession | null> => {
     return await UserSession.findOne({
-      where: { access_token: accessToken, refresh_token: refreshToken, status: "ACTIVE" },
+      where: { refresh_token: refreshToken, status: "ACTIVE" },
     });
   };
 

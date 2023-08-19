@@ -151,7 +151,6 @@ class AuthService {
   };
 
   public tokenRefresh = async (
-    accessToken: string,
     refreshToken: string,
     res: Response,
   ): Promise<{ access_token: string; refresh_token: string }> => {
@@ -161,7 +160,6 @@ class AuthService {
 
       // is refresh token valid and active
       const storedSession = await this.userSessionRepository.findSessionByAccTokenRefreshToken(
-        accessToken,
         refreshToken,
       );
       if (!storedSession)

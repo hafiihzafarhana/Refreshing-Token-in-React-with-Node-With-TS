@@ -5,13 +5,16 @@ import { useState } from "react";
 import axios from "axios";
 import GlobalModal from "../../components/Modal";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 const LoginView: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("farhana2023@gmail.com");
   const [password, setPassword] = useState("Farhana2023");
   const [showModal, setShowModal] = useState(false);
   const [loginError, setLoginError] = useState("");
 
+  // handle login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -50,7 +53,14 @@ const LoginView: React.FC = () => {
           sameSite: "none",
         });
 
-        console.log(response);
+        Cookies.set("is_login", "true", {
+          expires: 7,
+          path: "/",
+          secure: true,
+          sameSite: "none",
+        });
+
+        navigate("/");
       } else {
         setLoginError(response.data.error); // Set the error message
         setShowModal(true);
