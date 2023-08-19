@@ -1,0 +1,4 @@
+server/src/seeders
+server/src/migrations
+server/src/config/*.js
+server/src/templates
