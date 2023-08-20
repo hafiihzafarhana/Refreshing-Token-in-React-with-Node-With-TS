@@ -122,38 +122,45 @@ export const GlobalTopNavbar: React.FC = () => {
 
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
-    if (accessToken) {
-      axios
-        .get("http://localhost:5000/api/user-profiles/me", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then((response) => {
-          setUserData(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-          const refreshTokenExp = jwtDecode<{ exp: number }>(
-            Cookies.get("refresh_token") || ""
-          ).exp;
+    const refreshToken = Cookies.get("refresh_token");
 
-          // Decode the access token to get its expiration time
-          const accessTokenExp = jwtDecode<{ exp: number }>(
-            Cookies.get("access_token") || ""
-          ).exp;
+    if (accessToken !== undefined && refreshToken !== undefined) {
+      const refreshTokenExp = jwtDecode<{ exp: number }>(
+        refreshToken || ""
+      ).exp;
 
-          const currentTime = Date.now() / 1000;
+      const accessTokenExp = jwtDecode<{ exp: number }>(accessToken || "").exp;
 
-          if (accessTokenExp <= currentTime && refreshTokenExp > currentTime) {
-            refreshAccessToken();
-          } else {
-            Cookies.remove("access_token");
-            Cookies.remove("refresh_token");
-            Cookies.remove("is_login");
-            navigate("/login");
-          }
-        });
+      const currentTime = Date.now() / 1000;
+      // akses token expired, tapi refresh token belum
+      if (accessTokenExp <= currentTime && refreshTokenExp > currentTime) {
+        refreshAccessToken();
+      }
+      // akses token dan refresh token masih aman
+      else if (accessTokenExp > currentTime && refreshTokenExp > currentTime) {
+        axios
+          .get("http://localhost:5000/api/user-profiles/me", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then((response) => {
+            setUserData(response.data);
+          })
+          .catch((error) => {
+            console.error("Error fetching user data:", error);
+          });
+      }
+      // akses token dan refresh token sudah habis semua
+      else {
+        Cookies.remove("access_token");
+        Cookies.remove("refresh_token");
+        Cookies.remove("is_login");
+        navigate("/login");
+      }
+    } else {
+      Cookies.remove("is_login");
+      navigate("/login");
     }
   }, [navigate, refreshAccessToken]);
 
